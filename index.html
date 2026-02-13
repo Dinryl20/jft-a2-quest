@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JFT A2 Anime Mock Test - 125 Question Edition</title>
+    
+    <style>
+        body {
+            font-family: "Yu Mincho", "YuMincho", "Hiragino Mincho ProN", "MS PMincho", serif;
+            background: #ff7eb3;
+            background: linear-gradient(135deg, #ff7eb3 0%, #ff758c 100%);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            font-weight: 700;
+        }
+        
+        .jp-highlight {
+            background: transparent;
+            border-bottom: 3px solid #ef4444;
+            padding-bottom: 2px;
+            font-weight: 900;
+        }
+
+        .anime-card {
+            background: white;
+            border: 5px solid #000;
+            box-shadow: 10px 10px 0px #000;
+            border-radius: 24px;
+        }
+
+        .anime-btn {
+            background: #ffffff;
+            border: 4px solid #000;
+            box-shadow: 6px 6px 0px #000;
+            transition: all 0.1s;
+        }
+
+        .anime-btn:active {
+            transform: translate(3px, 3px);
+            box-shadow: 3px 3px 0px #000;
+        }
+
+        .status-badge {
+            background: #000;
+            color: #fff;
+            padding: 4px 12px;
+            border-radius: 99px;
+            font-weight: 900;
+            font-style: italic;
+            font-family: sans-serif;
+        }
+
+        #success-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(34, 197, 94, 0.95);
+            z-index: 200;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        @keyframes giantPop {
+            0% { transform: scale(0); opacity: 0; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .giant-pop { animation: giantPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0.5); opacity: 1; }
+            100% { transform: translateY(-20vh) scale(1.5); opacity: 0; }
+        }
+        .effect-element {
+            position: fixed;
+            z-index: 300;
+            pointer-events: none;
+            font-size: 6rem;
+        }
+        
+        .jp-bold { font-weight: 900; }
+        .text-huge { font-size: 2.2rem; line-height: 1.4; }
+
+        .set-card {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .set-card:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body class="flex flex-col items-center p-4">
+
+    <div id="success-overlay">
+        <div class="giant-pop flex flex-col items-center">
+            <div class="w-40 h-40 bg-white rounded-full flex items-center justify-center text-7xl shadow-2xl mb-4 border-8 border-black">✅</div>
+            <h2 class="text-7xl jp-bold text-white italic drop-shadow-[6px_6px_0px_rgba(0,0,0,1)] uppercase tracking-tighter" style="font-family: sans-serif;">CORRECT!!</h2>
+        </div>
+    </div>
+
+    <div id="app" class="w-full max-w-2xl mt-4">
+        
+        <!-- Main Menu -->
+        <div id="menu-screen" class="text-center">
+            <div class="mb-8">
+                <h1 class="text-6xl jp-bold text-white drop-shadow-[6px_6px_0px_rgba(0,0,0,1)] uppercase tracking-tighter italic leading-tight mb-2" style="font-family: sans-serif;">
+                    JFT-A2 QUEST
+                </h1>
+                <p class="text-2xl text-white font-black italic uppercase tracking-widest">RANDOMIZED CHALLENGE MODE</p>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div onclick="initSet('grammar')" class="set-card anime-card p-6 flex items-center gap-6 bg-blue-100">
+                    <div class="text-5xl">📝</div>
+                    <div class="text-left">
+                        <h3 class="text-2xl font-black uppercase">Set 1: Grammar (25 Qs)</h3>
+                        <p class="text-sm text-gray-600 font-bold">Particles & Sentence Forms</p>
+                    </div>
+                </div>
+
+                <div onclick="initSet('vocabulary')" class="set-card anime-card p-6 flex items-center gap-6 bg-green-100">
+                    <div class="text-5xl">📖</div>
+                    <div class="text-left">
+                        <h3 class="text-2xl font-black uppercase">Set 2: Vocab (25 Qs)</h3>
+                        <p class="text-sm text-gray-600 font-bold">Daily Life Vocabulary</p>
+                    </div>
+                </div>
+
+                <div onclick="initSet('kanji')" class="set-card anime-card p-6 flex items-center gap-6 bg-yellow-100">
+                    <div class="text-5xl">⛩️</div>
+                    <div class="text-left">
+                        <h3 class="text-2xl font-black uppercase">Set 3: Kanji (25 Qs)</h3>
+                        <p class="text-sm text-gray-600 font-bold">Readings & Meaning</p>
+                    </div>
+                </div>
+
+                <div onclick="initSet('reading')" class="set-card anime-card p-6 flex items-center gap-6 bg-purple-100">
+                    <div class="text-5xl">📑</div>
+                    <div class="text-left">
+                        <h3 class="text-2xl font-black uppercase">Set 4: Reading (25 Qs)</h3>
+                        <p class="text-sm text-gray-600 font-bold">Signs & Short Text</p>
+                    </div>
+                </div>
+
+                <div onclick="initSet('mock')" class="set-card anime-card p-6 flex items-center gap-6 bg-pink-100 border-pink-500">
+                    <div class="text-5xl">🔥</div>
+                    <div class="text-left">
+                        <h3 class="text-2xl font-black text-pink-700 uppercase">Set 5: Full Mock (25 Qs)</h3>
+                        <p class="text-sm text-gray-600 font-bold">Comprehensive Mix Exam</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div class="flex items-center gap-3">
+                    <button onclick="showMenu()" class="p-2 bg-black text-white rounded-lg hover:bg-gray-800 border-2 border-white">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                    </button>
+                    <span id="progress-text" class="status-badge text-xl">STAGE: 1/25</span>
+                </div>
+                <span id="score-text" class="status-badge bg-pink-600 text-xl">XP: 0</span>
+            </div>
+            
+            <div class="w-full bg-black/30 rounded-full h-6 mb-8 border-4 border-black overflow-hidden">
+                <div id="progress-bar" class="bg-yellow-400 h-full transition-all duration-300" style="width: 4%"></div>
+            </div>
+
+            <div id="question-card" class="anime-card p-8 flex flex-col min-h-[450px]">
+                <div id="question-text" class="text-huge font-black text-black mb-10 leading-snug tracking-tight jp-bold"></div>
+                <div id="options-container" class="grid grid-cols-1 gap-4"></div>
+
+                <div id="explanation-box" class="hidden mt-10 p-6 rounded-2xl bg-blue-50 border-4 border-black relative">
+                    <div id="reaction-emoji" class="absolute -top-14 right-4 text-8xl"></div>
+                    <div class="text-2xl jp-bold text-blue-800 mb-2 border-b-4 border-blue-200 inline-block">解説 (EXPLANATION):</div>
+                    <p id="rationale-text" class="text-xl font-black text-gray-800 leading-relaxed"></p>
+                    <button onclick="nextQuestion()" class="anime-btn mt-6 w-full py-5 text-black bg-white hover:bg-blue-100 text-2xl jp-bold">NEXT STAGE →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden text-center">
+            <div class="text-9xl mb-6">🏆</div>
+            <h2 class="text-6xl jp-bold text-white mb-8 drop-shadow-[6px_6px_0px_rgba(0,0,0,1)] italic">QUEST CLEAR!</h2>
+            <div class="anime-card p-10 mb-8 border-[6px]">
+                <div class="text-2xl jp-bold text-gray-500 uppercase">Final Score</div>
+                <div class="text-9xl jp-bold text-pink-600 my-6" id="final-score">0/25</div>
+                <p id="result-message" class="text-3xl font-black text-black"></p>
+            </div>
+            <button onclick="showMenu()" class="anime-btn w-full py-6 text-black bg-yellow-400 text-3xl jp-bold">BACK TO MENU</button>
+        </div>
+    </div>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Data structure: originalCorrect index is where the correct answer starts in the 'options' array.
+        const setsData = {
+            grammar: [
+                { question: "昨日、デパートへ（ <span class='jp-highlight'>　　　</span> ）行きました。", options: ["買い物", "買いに", "買う", "買いたい"], originalCorrect: 1, rationale: "V-stem + に行く indicates purpose of movement." },
+                { question: "窓を（ <span class='jp-highlight'>　　　</span> ）もいいですか。", options: ["あけて", "あけます", "あけない", "あけた"], originalCorrect: 0, rationale: "V-te + もいいですか is the standard form for asking permission." },
+                { question: "ここ（ <span class='jp-highlight'>　　　</span> ）座ってください。", options: ["を", "に", "で", "から"], originalCorrect: 1, rationale: "Static location of a result (sitting) takes the particle 'ni'." },
+                { question: "私は日本料理（ <span class='jp-highlight'>　　　</span> ）作ることができます。", options: ["を", "が", "に", "は"], originalCorrect: 1, rationale: "Potential ability form [Dictionary Form + こと] takes 'ga dekiru'." },
+                { question: "田中さんは今、電話（ <span class='jp-highlight'>　　　</span> ）います。", options: ["をかけて", "にかけて", "を話して", "で聞いて"], originalCorrect: 0, rationale: "Denwa o kakeru = to make a phone call." },
+                { question: "暑いですから、エアコンを（ <span class='jp-highlight'>　　　</span> ）ください。", options: ["つけて", "けして", "あけて", "しめて"], originalCorrect: 0, rationale: "Tsukeru = to turn on (electronics)." },
+                { question: "明日は休み（ <span class='jp-highlight'>　　　</span> ）ね。", options: ["だ", "な", "です", "で"], originalCorrect: 2, rationale: "Desu is the polite copula for nouns." },
+                { question: "あまり（ <span class='jp-highlight'>　　　</span> ）食べませんでした。", options: ["たくさん", "すこし", "ぜんぜん", "よく"], originalCorrect: 2, rationale: "Amari... nai = not very much/at all." },
+                { question: "この本は（ <span class='jp-highlight'>　　　</span> ）読みました。", options: ["もう", "まだ", "もっと", "はじめて"], originalCorrect: 0, rationale: "Mou = already." },
+                { question: "部屋を（ <span class='jp-highlight'>　　　</span> ）しました。", options: ["きれいに", "きれいな", "きれいで", "きれい"], originalCorrect: 0, rationale: "Adj(na) + ni suru = to make something [adjective]." },
+                { question: "公園（ <span class='jp-highlight'>　　　</span> ）散歩しましょう。", options: ["を", "に", "で", "が"], originalCorrect: 0, rationale: "Wo marks the space through which one moves (walking/flying)." },
+                { question: "このバスは病院（ <span class='jp-highlight'>　　　</span> ）行きますか。", options: ["へ", "で", "を", "が"], originalCorrect: 0, rationale: "He (e) marks the direction/destination." },
+                { question: "駅まで（ <span class='jp-highlight'>　　　</span> ）かかりますか。", options: ["どのくらい", "いくつ", "だれが", "どこへ"], originalCorrect: 0, rationale: "Dono kurai = How long/how much." },
+                { question: "日本（ <span class='jp-highlight'>　　　</span> ）生活はどうですか。", options: ["での", "が", "を", "に"], originalCorrect: 0, rationale: "De no = 'in [location]' as a modifier for a noun." },
+                { question: "あした（ <span class='jp-highlight'>　　　</span> ）会いましょう。", options: ["まで", "に", "が", "は"], originalCorrect: 1, rationale: "Ni marks specific point in time." },
+                { question: "宿題を（ <span class='jp-highlight'>　　　</span> ）から、遊びに行きます。", options: ["して", "した", "する", "しない"], originalCorrect: 0, rationale: "V-te + kara = after doing V." },
+                { question: "このリンゴは一つ100円（ <span class='jp-highlight'>　　　</span> ）です。", options: ["ずつ", "だけ", "しか", "まで"], originalCorrect: 0, rationale: "Zutsu = each/at a time." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）行きたいですか。", options: ["どこへ", "だれを", "いつに", "何を"], originalCorrect: 0, rationale: "Doko he = Where to." },
+                { question: "昨日は（ <span class='jp-highlight'>　　　</span> ）なかったです。", options: ["あつく", "あつい", "あつくて", "あつかった"], originalCorrect: 0, rationale: "I-adj negative past: ~ku nakatta." },
+                { question: "私は犬（ <span class='jp-highlight'>　　　</span> ）好きです。", options: ["が", "を", "に", "は"], originalCorrect: 0, rationale: "Suki takes 'ga' for the object of liking." },
+                { question: "テレビを（ <span class='jp-highlight'>　　　</span> ）ながらご飯を食べます。", options: ["み", "みて", "みる", "みた"], originalCorrect: 0, rationale: "V-stem + nagara = while doing V." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）料理がおいしいですか。", options: ["どの", "どこ", "だれ", "なに"], originalCorrect: 0, rationale: "Dono + Noun = Which [Noun]." },
+                { question: "ここは静か（ <span class='jp-highlight'>　　　</span> ）いいですね。", options: ["で", "に", "な", "だ"], originalCorrect: 0, rationale: "Na-adj + de as a conjunction." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）練習してください。", options: ["もっと", "もう", "まだ", "ずっと"], originalCorrect: 0, rationale: "Motto = More." },
+                { question: "先生（ <span class='jp-highlight'>　　　</span> ）聞きました。", options: ["に", "を", "が", "へ"], originalCorrect: 0, rationale: "Ni marks the source/person when asking/hearing." }
+            ],
+            vocabulary: [
+                { question: "朝起きて、顔を（ <span class='jp-highlight'>　　　</span> ）ます。", options: ["あらって", "あびて", "みがいて", "ふいて"], originalCorrect: 0, rationale: "Kao o arau = Wash face." },
+                { question: "明日の資料を（ <span class='jp-highlight'>コピー</span> ）してください。", options: ["ふくしゃ", "しりょう", "いんさつ", "コピー"], originalCorrect: 3, rationale: "Kopii is Katakana for Copy." },
+                { question: "この薬は1日に3回、（ <span class='jp-highlight'>　　　</span> ）ください。", options: ["のんで", "たべて", "つかって", "して"], originalCorrect: 0, rationale: "Kusuri o nomu = Take (drink) medicine." },
+                { question: "「（ <span class='jp-highlight'>故障</span> ）しています。」", options: ["うごいている", "とまっている", "こわれている", "つかえない"], originalCorrect: 2, rationale: "Koshou = out of order/broken." },
+                { question: "シャツを（ <span class='jp-highlight'>　　　</span> ）いる人はだれですか。", options: ["きめて", "きて", "はいて", "かぶって"], originalCorrect: 1, rationale: "Kiru = wear upper body; Kaburu = head; Haku = lower body." },
+                { question: "今日は（ <span class='jp-highlight'>　　　</span> ）がいいですね。", options: ["きぶん", "からだ", "こころ", "あたま"], originalCorrect: 0, rationale: "Kibun ga ii = feel good." },
+                { question: "おなかが（ <span class='jp-highlight'>　　　</span> ）ました。", options: ["すき", "あき", "なき", "おき"], originalCorrect: 0, rationale: "Onaka ga suku = to be hungry." },
+                { question: "喉が（ <span class='jp-highlight'>　　　</span> ）ました。", options: ["かわき", "すき", "なき", "おき"], originalCorrect: 0, rationale: "Nodo ga kawaku = to be thirsty." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をぬいでください。", options: ["くつ", "ぼうし", "てぶくろ", "めがね"], originalCorrect: 0, rationale: "Kutsu o nugu = take off shoes." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をかけてください。", options: ["めがね", "くつ", "ズボン", "ぼうし"], originalCorrect: 0, rationale: "Megane o kakeru = wear glasses." },
+                { question: "銀行で（ <span class='jp-highlight'>　　　</span> ）をおろします。", options: ["おかね", "にもつ", "きっぷ", "てがみ"], originalCorrect: 0, rationale: "Okane o orosu = withdraw money." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をみがきます。", options: ["は", "て", "かお", "あし"], originalCorrect: 0, rationale: "Ha o migaku = brush teeth." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）を浴びます。", options: ["シャワー", "おふろ", "みず", "おゆ"], originalCorrect: 0, rationale: "Shower o abiru = take a shower." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をひきました。", options: ["かぜ", "あめ", "ゆき", "くも"], originalCorrect: 0, rationale: "Kaze o hiku = catch a cold." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）がいたいです。", options: ["あたま", "あめ", "くも", "かぜ"], originalCorrect: 0, rationale: "Atama ga itai = headache." },
+                { question: "タクシーに（ <span class='jp-highlight'>　　　</span> ）ます。", options: ["のり", "おり", "はいり", "で"], originalCorrect: 0, rationale: "Norimasu = get on/ride." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をつけます。", options: ["でんき", "みず", "かぜ", "あめ"], originalCorrect: 0, rationale: "Denki o tsukeru = turn on lights." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をけします。", options: ["テレビ", "まど", "ドア", "いす"], originalCorrect: 0, rationale: "TV o kesu = turn off TV." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をあけます。", options: ["まど", "でんき", "かぜ", "あめ"], originalCorrect: 0, rationale: "Mado o akeru = open window." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をしめます。", options: ["ドア", "でんき", "かぜ", "あめ"], originalCorrect: 0, rationale: "Door o shimeru = close door." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をあらいます。", options: ["さら", "ごはん", "おゆ", "おちゃ"], originalCorrect: 0, rationale: "Sara o arau = wash dishes." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をします。", options: ["そうじ", "あめ", "かぜ", "くも"], originalCorrect: 0, rationale: "Souji o suru = cleaning." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をだします。", options: ["ゴミ", "みず", "おゆ", "おちゃ"], originalCorrect: 0, rationale: "Gomi o dasu = take out trash." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をかいます。", options: ["きっぷ", "かぜ", "あめ", "くも"], originalCorrect: 0, rationale: "Kippu o kau = buy ticket." },
+                { question: "（ <span class='jp-highlight'>　　　</span> ）をききます。", options: ["おんがく", "ごはん", "おゆ", "おちゃ"], originalCorrect: 0, rationale: "Ongaku o kiku = listen to music." }
+            ],
+            kanji: [
+                { question: "昨日の（ <span class='jp-highlight'>天気</span> ）はどうでしたか。", options: ["てんき", "でんき", "てんち", "てんぎ"], originalCorrect: 0, rationale: "Weather." },
+                { question: "駅の（ <span class='jp-highlight'>入口</span> ）はどこですか。", options: ["でぐち", "いりぐち", "まどぐち", "かいさつ"], originalCorrect: 1, rationale: "Entrance." },
+                { question: "（ <span class='jp-highlight'>一番</span> ）安いのはどれですか。", options: ["いっちょう", "いっぽん", "いちばん", "いつばん"], originalCorrect: 2, rationale: "Number one/best." },
+                { question: "（ <span class='jp-highlight'>毎週</span> ）日曜日は休みです。", options: ["まいしゅう", "まいげつ", "まいとし", "まいにち"], originalCorrect: 0, rationale: "Every week." },
+                { question: "（ <span class='jp-highlight'>会社</span> ）まで30分かかります。", options: ["こうえん", "がっこう", "ぎんこう", "かいしゃ"], originalCorrect: 3, rationale: "Company." },
+                { question: "（ <span class='jp-highlight'>午前</span> ）中に出かけます。", options: ["ごぜん", "ごご", "あさ", "ばん"], originalCorrect: 0, rationale: "A.M. / Morning." },
+                { question: "（ <span class='jp-highlight'>午後</span> ）から雨が降ります。", options: ["ごぜん", "ごご", "あさ", "ばん"], originalCorrect: 1, rationale: "P.M. / Afternoon." },
+                { question: "（ <span class='jp-highlight'>昨日</span> ）は楽しかったです。", options: ["きのう", "きょう", "あした", "あさって"], originalCorrect: 0, rationale: "Yesterday." },
+                { question: "（ <span class='jp-highlight'>今日</span> ）は暑いですね。", options: ["きのう", "きょう", "あした", "あさって"], originalCorrect: 1, rationale: "Today." },
+                { question: "（ <span class='jp-highlight'>明日</span> ）は暇です。", options: ["きのう", "きょう", "あした", "あさって"], originalCorrect: 2, rationale: "Tomorrow." },
+                { question: "（ <span class='jp-highlight'>毎日</span> ）忙しいです。", options: ["まいしゅう", "まいにち", "まいげつ", "まいとし"], originalCorrect: 1, rationale: "Every day." },
+                { question: "（ <span class='jp-highlight'>日本</span> ）語を勉強します。", options: ["にほん", "にっぽん", "ひのもと", "じつぼん"], originalCorrect: 0, rationale: "Japan." },
+                { question: "（ <span class='jp-highlight'>外国人</span> ）がたくさんいます。", options: ["がいこくじん", "がいこくびと", "がいごくじん", "がいこくちん"], originalCorrect: 0, rationale: "Foreigner." },
+                { question: "（ <span class='jp-highlight'>先生</span> ）の話を聞きます。", options: ["せんせい", "さきしょう", "ぜんせい", "せんじょう"], originalCorrect: 0, rationale: "Teacher." },
+                { question: "（ <span class='jp-highlight'>学生</span> ）は勉強します。", options: ["がくせい", "がっせい", "かくせい", "がくぜい"], originalCorrect: 0, rationale: "Student." },
+                { question: "（ <span class='jp-highlight'>学校</span> ）へ行きます。", options: ["がっこう", "がくこう", "かっこう", "かくこう"], originalCorrect: 0, rationale: "School." },
+                { question: "（ <span class='jp-highlight'>本</span> ）を読みます。", options: ["ほん", "もと", "ぽん", "ぼん"], originalCorrect: 0, rationale: "Book." },
+                { question: "（ <span class='jp-highlight'>水</span> ）を飲みます。", options: ["みず", "おゆ", "おちゃ", "さけ"], originalCorrect: 0, rationale: "Water." },
+                { question: "（ <span class='jp-highlight'>火</span> ）をつけてください。", options: ["ひ", "みず", "つち", "かね"], originalCorrect: 0, rationale: "Fire." },
+                { question: "（ <span class='jp-highlight'>木</span> ）の下にいます。", options: ["き", "もり", "はやし", "くさ"], originalCorrect: 0, rationale: "Tree." },
+                { question: "（ <span class='jp-highlight'>金</span> ）曜日です。", options: ["きん", "かね", "こん", "かな"], originalCorrect: 0, rationale: "Gold/Friday." },
+                { question: "（ <span class='jp-highlight'>土</span> ）曜日です。", options: ["ど", "つち", "と", "づ"], originalCorrect: 0, rationale: "Earth/Saturday." },
+                { question: "（ <span class='jp-highlight'>男</span> ）の人です。", options: ["おとco", "おんな", "ひと", "こ"], originalCorrect: 0, rationale: "Man." },
+                { question: "（ <span class='jp-highlight'>女</span> ）の人です。", options: ["おんな", "おとこ", "ひと", "こ"], originalCorrect: 0, rationale: "Woman." },
+                { question: "（ <span class='jp-highlight'>私</span> ）の家です。", options: ["わたし", "わたくし", "ぼく", "おれ"], originalCorrect: 0, rationale: "Me/I." }
+            ],
+            reading: [
+                { question: "「火曜日に燃えるゴミを出してください」<br>いつゴミを出しますか。", options: ["げつようび", "かようび", "すいようび", "きんようび"], originalCorrect: 1, rationale: "Tuesday." },
+                { question: "「3階の会議室に集まってください」<br>どこへ行きますか。", options: ["1F", "2F", "3F", "4F"], originalCorrect: 2, rationale: "3rd Floor." },
+                { question: "「受付で名前を書いてください」<br>何をしますか。", options: ["名前を書く", "名前を言う", "名前を聞く", "名前を見る"], originalCorrect: 0, rationale: "Write your name." },
+                { question: "「エレベーターは使わないでください」", options: ["Use it", "Don't use it", "Wait for it", "Go up"], originalCorrect: 1, rationale: "Don't use." },
+                { question: "「駅の前に集合してください」<br>どこで待ちますか。", options: ["In front of station", "Inside station", "Behind station", "Near station"], originalCorrect: 0, rationale: "Mae = Front." },
+                { question: "「10時15分に始まります」<br>何時に始まりますか。", options: ["10:15", "10:50", "11:15", "9:45"], originalCorrect: 0, rationale: "Ten fifteen." },
+                { question: "「靴を脱いで上がってください」", options: ["Take off shoes", "Keep shoes on", "Wash shoes", "Buy shoes"], originalCorrect: 0, rationale: "Nugu = Take off." },
+                { question: "「写真は撮らないでください」", options: ["Take pictures", "Don't take pictures", "Look at pictures", "Buy pictures"], originalCorrect: 1, rationale: "Toranaide = Don't take." },
+                { question: "「この水は飲めません」", options: ["Can drink", "Cannot drink", "Hot water", "Cold water"], originalCorrect: 1, rationale: "Nomemasen = Cannot drink." },
+                { question: "「土曜日は休みです」<br>いつ休みですか。", options: ["Saturday", "Sunday", "Monday", "Friday"], originalCorrect: 0, rationale: "Saturday." },
+                { question: "「入り口でチケットを買ってください」", options: ["Buy at entrance", "Buy at exit", "Buy online", "Free entrance"], originalCorrect: 0, rationale: "Iriguchi = Entrance." },
+                { question: "「静かにしてください」", options: ["Be quiet", "Be loud", "Be fast", "Be slow"], originalCorrect: 0, rationale: "Shizuka ni = Quietly." },
+                { question: "「ここに名前を書いてください」", options: ["Write name here", "Read name here", "Call name here", "Erase name here"], originalCorrect: 0, rationale: "Kaku = Write." },
+                { question: "「忘れ物に注意してください」", options: ["Be careful of lost items", "Don't bring items", "Take all items", "Find items"], originalCorrect: 0, rationale: "Wasuremono = Forgotten items." },
+                { question: "「危ないですから入らないでください」", options: ["Dangerous/Don't enter", "Safe to enter", "Enter slowly", "Exit quickly"], originalCorrect: 0, rationale: "Abunai = Dangerous." },
+                { question: "「お一人様二つまでです」", options: ["Max 2 per person", "Max 1 per person", "2 people only", "1 person only"], originalCorrect: 0, rationale: "Futatsu made = up to two." },
+                { question: "「禁煙です」", options: ["No smoking", "Smoking ok", "No eating", "No drinking"], originalCorrect: 0, rationale: "Kinen = No smoking." },
+                { question: "「準備中です」", options: ["Open", "Closed/Preparing", "Welcome", "Exit"], originalCorrect: 1, rationale: "Junbichuu = Preparing." },
+                { question: "「営業中です」", options: ["Open for business", "Closed", "Preparing", "Break time"], originalCorrect: 0, rationale: "Eigyouchuu = Open." },
+                { question: "「出口はこちらです」", options: ["Exit is here", "Entrance is here", "Toilet is here", "Elevator is here"], originalCorrect: 0, rationale: "Deguchi = Exit." },
+                { question: "「お手洗いはあちらです」", options: ["Toilet is over there", "Exit is over there", "Shop is over there", "Bus stop is over there"], originalCorrect: 0, rationale: "Otearai = Toilet." },
+                { question: "「本日休業」", options: ["Closed today", "Open today", "Sale today", "Free today"], originalCorrect: 0, rationale: "Honjitsu Kyugyo = Closed today." },
+                { question: "「関係者以外立入禁止」", options: ["Staff only", "Everyone welcome", "No smoking", "No food"], originalCorrect: 0, rationale: "No entry except authorized personnel." },
+                { question: "「足元に注意してください」", options: ["Watch your step", "Watch your head", "Watch your bags", "Watch your clock"], originalCorrect: 0, rationale: "Ashimoto = feet/step." },
+                { question: "「一列に並んでください」", options: ["Line up in one row", "Sit down", "Run fast", "Don't line up"], originalCorrect: 0, rationale: "Narande = Line up." }
+            ],
+            mock: [] // Generated dynamically from a mix
+        };
+
+        // Populate Mock from other sets
+        setsData.mock = [
+            ...setsData.grammar.slice(0, 5),
+            ...setsData.vocabulary.slice(0, 5),
+            ...setsData.kanji.slice(0, 5),
+            ...setsData.reading.slice(0, 5),
+            ...setsData.grammar.slice(5, 10)
+        ];
+
+        let activeSet = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let canAnswer = true;
+
+        function showMenu() {
+            document.getElementById('menu-screen').classList.remove('hidden');
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+        }
+
+        // Proper Fisher-Yates Shuffle
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function initSet(setName) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            // Deep copy and shuffle options for each question
+            activeSet = setsData[setName].map(q => {
+                const correctAnswerText = q.options[q.originalCorrect];
+                const shuffledOptions = shuffle([...q.options]);
+                const newCorrectIndex = shuffledOptions.indexOf(correctAnswerText);
+                return {
+                    ...q,
+                    options: shuffledOptions,
+                    correct: newCorrectIndex
+                };
+            });
+
+            // Optional: Shuffle the question order too
+            shuffle(activeSet);
+
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function playCorrectSound() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'square';
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(523.25, now); 
+            osc.frequency.exponentialRampToValueAtTime(1046.50, now + 0.1); 
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.start(now);
+            osc.stop(now + 0.3);
+        }
+
+        function playWrongSound() {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.linearRampToValueAtTime(50, now + 0.4);
+            gain.gain.setValueAtTime(0.1, now);
+            gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        }
+
+        function spawnEffect(emoji, type) {
+            const count = type === 'correct' ? 12 : 8;
+            for(let i = 0; i < count; i++) {
+                setTimeout(() => {
+                    const el = document.createElement('div');
+                    el.className = 'effect-element';
+                    el.innerText = emoji;
+                    el.style.left = Math.random() * 100 + 'vw';
+                    el.style.bottom = '-10vh';
+                    el.style.animation = `floatUp ${1.5 + Math.random() * 1}s ease-out forwards`;
+                    document.body.appendChild(el);
+                    setTimeout(() => el.remove(), 2500);
+                }, i * 100);
+            }
+        }
+
+        function triggerWinVisuals() {
+            const overlay = document.getElementById('success-overlay');
+            overlay.style.display = 'flex';
+            spawnEffect('✨', 'correct');
+            spawnEffect('🌸', 'correct');
+            setTimeout(() => { overlay.style.display = 'none'; }, 800);
+        }
+
+        function showQuestion() {
+            const data = activeSet[currentQuestion];
+            canAnswer = true;
+            document.getElementById('progress-text').innerText = `STAGE: ${currentQuestion + 1}/${activeSet.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestion + 1) / activeSet.length) * 100}%`;
+            document.getElementById('question-text').innerHTML = data.question;
+            document.getElementById('explanation-box').classList.add('hidden');
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            data.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = "anime-btn w-full text-left p-4 rounded-xl bg-white hover:bg-yellow-50 font-black flex items-center border-[4px]";
+                btn.innerHTML = `<span class="w-10 h-10 rounded-lg bg-black text-white flex items-center justify-center mr-4 text-xl">${String.fromCharCode(65 + index)}</span> <span class="text-xl">${opt}</span>`;
+                btn.onclick = () => selectOption(index, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectOption(index, btn) {
+            if (!canAnswer) return;
+            canAnswer = false;
+            const data = activeSet[currentQuestion];
+            const reactionDisplay = document.getElementById('reaction-emoji');
+            
+            if (index === data.correct) {
+                score++;
+                document.getElementById('score-text').innerText = `XP: ${score * 100}`;
+                playCorrectSound();
+                btn.classList.add('bg-green-100');
+                btn.style.borderColor = "#22c55e";
+                reactionDisplay.innerText = "🔥";
+                triggerWinVisuals();
+            } else {
+                playWrongSound();
+                btn.classList.add('bg-red-100');
+                btn.style.borderColor = "#ef4444";
+                reactionDisplay.innerText = "😵‍💫";
+                spawnEffect('❌', 'wrong');
+                const allBtns = document.querySelectorAll('#options-container button');
+                allBtns[data.correct].style.borderColor = "#22c55e";
+                allBtns[data.correct].classList.add('bg-green-50');
+            }
+            document.getElementById('rationale-text').innerText = data.rationale;
+            document.getElementById('explanation-box').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < activeSet.length) {
+                showQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `${score}/${activeSet.length}`;
+            const percent = (score / activeSet.length) * 100;
+            let msg = percent >= 90 ? "S-RANK! GODLIKE!" : 
+                      percent >= 80 ? "A-RANK! AMAZING!" : 
+                      percent >= 60 ? "B-RANK! GOOD EFFORT!" : "C-RANK! KEEP STUDYING!";
+            document.getElementById('result-message').innerText = msg;
+        }
+    </script>
+</body>
+</html>
